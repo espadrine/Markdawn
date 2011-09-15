@@ -1,0 +1,307 @@
+Markdawn Specification And Explication.
+=======================================
+
+Copyright © Thaddee Tyl <thaddee.tyl@gmail.com>.  MIT License.
+
+
+*This section is non-normative.*
+
+Markdawn is a [Markdown] backward-compatible extension that both makes it
+easier to use and that allows finer tuning to your documents.
+
+Unlike [Markdown], it does not have a single output target.  Sure, it can
+output [HTML].  However, the goal is also to produce `troff` output, maybe
+TeX, or even PDF!  
+As a result, it is not biased towards [HTML].
+
+  [Markdown]: http://daringfireball.net/projects/markdown/
+  [HTML]: "HyperText Markup Language"
+
+
+Elements of the Language
+------------------------
+
+### Inline elements
+
+Here comes all special syntax you can use in a block element.
+
+We can have __emphasized text__ surrounded by stars `*` or underscores `_`,
+when the first star (or underscore) is followed by a non-space character.
+
+    I emphasize *this*.  It even works inside a word: un*frigging*believable!
+
+On the other hand, underscores `_` don't emphasize inside a word.
+
+__Strong text__ is similarly surrounded by two stars `**`.
+A __definition__ is surrounded by two underscores `__`.
+
+You can add typewriter, monospaced __code__ with backquotes `` ` `` (which you
+may double, if you need a backquote in there).
+There also are __en-dashes__ `--` and __em-dashes__ `---`.
+
+    I want to make sure you *truly* understand my examples.
+    **Warning.** This dungeon is dangerous -- **avoid the ducks.**
+    You can do so with the __`Duck::avoidTheDucks()`__ method.
+
+This example might yield:
+
+    <p>
+      I want to make sure you <em>truly</em> understand my examples.
+      <strong>Warning.</strong> This dungeon is dangerous &ndash;
+      <strong>avoid the ducks.</strong>
+      You can do so with the
+      <dfn id="Duck::avoidTheDucks()"><code>Duck::avoidTheDucks()</code></dfn>
+      method.
+    </p>
+
+There are two ways to specify __links__.  Both ways make the apparent text
+delimited by square brackets.
+
+The inline style specifies the target right next to the apparent text, between
+parentheses, with an optional title next to it.  It can also be between angle
+brackets: the url will then be shown, and will be clickable.
+
+    RFC 2606 denies the right to own
+    [some DNS addresses] (http://example.com/ "Example.com is not allowed").
+    Read more at the IETF <http://tools.ietf.org/html/rfc2606>.
+
+    Authors:
+    - Donald E. Eastlake <dee3@us.ibm.com>
+    - Aliza R. Panitz <buglady@fuschia.net>
+
+… may render as:
+
+    <p>
+      RFC 2606 denies the right to own
+      <a href="http://example.com/" title="Example.com is not allowed">
+        some DNS addresses
+      </a>.
+      Read more at the IETF
+      <a href="http://tools.ietf.org/html/rfc2606">
+        http://tools.ietf.org/html/rfc2606
+      </a>.
+    </p>
+    <p>
+      Authors:
+      <ul>
+        <li>
+          Donald E. Eastlake
+          <a href="mailto:dee3@us.ibm.com">dee3@us.ibm.com</a>
+        </li>
+        <li>
+          Aliza R. Panitz
+          <a href="mailto:buglady@fuschia.net">buglady@fuschia.net</a>
+        </li>
+      </ul>
+    </p>
+
+In the better, reference-style link, you give a name to the link between square
+brackets.
+
+    There exists April Fools jokes RFCs, such as the [HyperText Coffee Pot
+    Control Protocol] [HTCPCP].
+
+Later in the code, after exactly two spaces, you may make the reference
+explicit.
+
+- Enter the reference between square brackets,
+- Add a colon `:`,
+- (Optionally add spaces here),
+- Write the URL (either plain or within angle brackets),
+- (Optionally add a title between double quotes `"`, after at least one space).
+
+      [HTCPC]: http://tools.ietf.org/html/rfc2324  "Coffee Pot Control?"
+
+You may also have a single square-bracketed reference.
+
+    The Standard for Transmission of IP Datagrams on Avian Carriers,
+    RFC1149 [1], was actually implemented in Linux.
+
+      [1]: http://tools.ietf.org/html/rfc1149
+
+In this case, the clickable text will be "RFC1149", and the "[1]" usually won't
+show.
+
+If you want the text between square brackets to be the clickable text, instead
+of the word before the opening square bracket, you can do like so:
+
+    Yet another implemented joke is [IPv6 over Social Networks] [].
+    Unsurprisingly, the implementer worked at [Facebook] [].
+
+      [IPv6 over Social Networks]:
+        http://tools.ietf.org/html/rfc5514#ref-IPv6overFacebook
+      [Facebook]: http://facebook.com/
+
+If you wish to have __footnotes__, you may do so using a syntax similar to the
+single square-bracketed reference, but the reference name must start with a `^`
+character.
+
+    I feel like I am running out of joke RFCs examples [^1].
+
+      [^1]:
+        There are plenty, though, all listed on Wikipedia [Wikipedia April Fools
+        RFCs].
+
+          [Wikipedia April Fools RFCs]:
+            http://en.wikipedia.org/wiki/April_Fools'_Day_RFC
+
+Finally, you can set __classes__ to a paragraph by adding a line with two
+spaces, followed by a dot `.`, followed by the name of the class.
+
+    The following snippet is in EcmaScript:
+
+      .es6
+
+        let [stringFromJSON, JSONFromString] = Object.getOwnPropertyNames(JSON)
+          .map(function(propName){ return JSON[propName]; });
+
+You can similarly set __ids__.  It is very similar to classes.  Instead of a dot
+`.`, you use the Pilcrow sign `¶`.
+
+      ¶ Beautiful place
+
+    This place is *very* important.
+    You can refer to it with this link: <#Beautiful_place>.
+
+
+### Block elements
+
+A __heading__ can have two representations, just like the original Markdown.  It
+either supports Setext headings, underlined by at least four equal signs `===`
+(first-type heading) or four minus signs `-` (second-type heading).
+
+    This is a first-type heading.
+    =============================
+
+    This is a second-type heading.
+    ----
+
+It also supports atx-style, with hash characters `#` at the start of line.  A
+single hash is a first-type heading, two hashes is a second-type heading, and so
+on.  Trailing hashes at the end of the line are removed (they may be used for
+aesthetic effects in the Markdawn document).
+
+    ### This is a third-type heading.
+
+    ####### This is is seventh-type heading. #######
+
+A __Pilcrow__ symbol `¶` at the start or end of a heading creates a reference id
+that one can use to point to it.  The name of the corresponding id is the same
+as the content of the heading, with spaces converted to underscores `_`, or, if
+the Pilcrow is immediately followed by square brackets, with non-space
+characters in them, the content of those brackets shall be the fragment id used.
+
+    ## Link to me ¶
+
+    I linked the current section [here] (#Link_to_me).
+
+    ## URLs allow spaces in fragments, HTML doesn't allow them in ids ¶[allowed]
+
+    Do you know where spaces are allowed?  Go here <#allowed> if you don't.
+
+A __paragraph__ is a portion of text that may span multiple lines, and that is
+bounded by blank lines.
+
+Specifically, a paragraph starts with the beginning of a line, followed by any
+character but a space or a tab, and ends with two consecutive newlines.
+
+For example:
+
+    This is a paragraph.
+    This is on another line, but it is the same paragraph.
+
+    This is a second paragraph.
+
+… may become, in HTML:
+
+    <p>
+      This is a paragraph.
+      This is on another line, but it is the same paragraph.
+    </p>
+    <p>
+      This is a second paragraph.
+    </p>
+
+A __line break__ is a sequence of at least one space, followed by a newline.
+
+For instance, this:
+
+    This is a paragraph.  
+    It contains a line break.
+
+… may become:
+
+    <p>
+      This is a paragraph. <br>
+      It contains a line break.
+    </p>
+
+If you need to quote someone, you can use a __blockquote__.  Every line of a
+blockquote must start with a greater-than `>` character.
+
+    > The first line of a blockquote.
+    > Yet another line.
+
+    > This blockquote is distinct from the previous one.
+
+Blockquotes can be nested, and have other markdawn elements.
+
+There are three ways to make an unordered __list__, one for each authorized
+list character.  The list characters are star `*`, plus `+`, and minus `-`.  In
+each case, each line of the list must start with the list character.  A change
+of character creates a nested list.  A blank line stops the list.
+
+    * Red
+    * Green
+    +  Nature
+    +  Luck
+    * Blue
+
+… might become:
+
+    <ul>
+      <li> Red </li>
+      <li> Green
+        <ul>
+          <li> Nature </li>
+          <li> Luck </li>
+        </ul>
+      </li>
+      <li> Blue </li>
+    </ul>
+
+We also have ordered lists.  In this case, each line of the list must start with
+a number, followed by a dot.  Unlike in the original Markdown, the first number
+*must* be 1, to avoid false positives (and increase readability).
+
+    There are `0b10` types of people in the world:
+
+    1. Programmers prefer to start lists with 0.
+    2. The rest of the world are not programmers.
+
+__Code blocks__ are indented by four spaces, or a single tab.  Since they can
+nest, eight spaces (or two tabs) represent a code block inside another code
+block.
+
+__Tables__ start with a pipe symbol `|`.  Columns are separated by pipes, and
+header cells are separated from the rest by dashes `-`.
+
+    | Grade. | Yield Point.  | Ultimate tensile strength |
+    | ------ | ------------  | ------------------------- |
+    | Hard   | 0.45 ultimate |        56.2 kg/mm²        |
+    | Medium | 0.45 ultimate |        49.2 kg/mm²        |
+    | Soft   | 0.45 ultimate |        42.2 kg/mm²        |
+
+Finally, you have __horizontal rules__ created from three stars or more `***` or
+three dashes or more `---`, and both can have spaces interleaved.
+
+
+Backwards Incompatibilities
+---------------------------
+
+We made them as few as possible, and decided to give solid explanation to
+each.
+
+- Inline HTML does not work.  Indeed, it would induce a bias towards one
+  output type.  How would it get rendered in `troff` if we kept it?
+- That's it!
