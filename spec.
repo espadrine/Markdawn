@@ -6,16 +6,16 @@ Copyright © Thaddee Tyl <thaddee.tyl@gmail.com>.  MIT License.
 
 *This section is non-normative.*
 
-Markdawn is a [Markdown] backward-compatible extension that both makes it
+Markdawn is a [Markdown] [] backward-compatible extension that both makes it
 easier to use and that allows finer tuning to your documents.
 
-Unlike [Markdown], it does not have a single output target.  Sure, it can
-output [HTML].  However, the goal is also to produce `troff` output, maybe
+Unlike [Markdown] [], it does not have a single output target.  Sure, it can
+output [HTML] [].  However, the goal is also to produce `troff` output, maybe
 TeX, or even PDF!  
-As a result, it is not biased towards [HTML].
+As a result, it is not biased towards [HTML] [].
 
   [Markdown]: http://daringfireball.net/projects/markdown/
-  [HTML]: "HyperText Markup Language"
+  [HTML]: http://developers.whatwg.org/ "HyperText Markup Language"
 
 
 Elements of the Language
